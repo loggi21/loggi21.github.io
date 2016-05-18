@@ -200,13 +200,10 @@ canvas#game-canvas {
 
   
     
-<script type="text/typescript">
+<script>
 
 
-
-
-
-var canvas = document.getElementById('game-canvas')
+var canvas = document.getElementById('game-canvas');
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 var ctx = canvas.getContext("2d");
@@ -215,254 +212,185 @@ var canvasData;
 /**
 выполняем каждый кадр (примерно 60 раз в секунду)
 */
-
-function onEnterFrame()
-{
-	// очищаем область рисования
-	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-	canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-  // обновляем игровые параметры
-	update();
-  // отрисовываем новую графику в области рисования
-  //ctx.putImageData(canvasData, 0, 0);
-  
-  // планируем вызов этой же функции на следующий кадр
-	requestAnimationFrame(onEnterFrame);
+function onEnterFrame() {
+    // очищаем область рисования
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+    // обновляем игровые параметры
+    update();
+    // отрисовываем новую графику в области рисования
+    //ctx.putImageData(canvasData, 0, 0);
+    // планируем вызов этой же функции на следующий кадр
+    requestAnimationFrame(onEnterFrame);
 }
-
 /**
 рисует пиксель заданного цвета на заданных координатах
 */
-function drawPixel (x, y, r, g, b, a)
-{
+function drawPixel(x, y, r, g, b, a) {
     var index = (x + y * canvasWidth) * 4;
-
     canvasData.data[index + 0] = r;
     canvasData.data[index + 1] = g;
     canvasData.data[index + 2] = b;
     canvasData.data[index + 3] = a;
 }
-
-var POINTS = []
-var QUEUE = []
+var POINTS = [];
+var QUEUE = [];
 var T = 0;
 var T_SPEED = 0.1;
-
-
-function updateTemp()
-{
-  if(T<=10)
-  {
-    T += T_SPEED;
-  }
-  $('#t-value').text(T.toFixed(0));
+function updateTemp() {
+    if (T <= 10) {
+        T += T_SPEED;
+    }
+    $('#t-value').text(T.toFixed(0));
 }
 setInterval(updateTemp, 100);
-
-
-
 /**
 функция возвращает случайное число от 0 до x не включительно [0,x)
 */
-function rnd(x:number){ return Math.floor(Math.random() * x); }
-
+function rnd(x) { return Math.floor(Math.random() * x); }
 /**
 функция возвращает случайно выбранный элемент из массива
 */
-function rnd_choice<T>(arr:T[]){ return arr[Math.floor(Math.random() * arr.length)]; }
-
+function rnd_choice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 /**
 функция возвращает случайно выбранное направление движения в формате {x, y}
 */
-function rnd_dir()
-{
-  return Point.normalize({ x:Math.random() * 2 - 1, y:Math.random() * 2 - 1 }, 1)
+function rnd_dir() {
+    return Point.normalize({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 }, 1);
 }
-
-class Point
-{
-  constructor(
-  	public x = 0,
-    public y = 0,
-    public dx = 0,
-    public dy = 0,
-    public radius = 0,
-    public color = ""
-  )
-  {
-	}
-  move(bLeft:number, bTop:number, bRight:number, bBottom:number)
-  // bLeft — левая граница, от которой отскакивает точка
-  // bTop — верхняя, bRight — правая, bBottom — нижняя
-  {
-  	// сдвигаем точку на dx/dy
-  	this.x += this.dx
-    this.y += this.dy
-    
-    // если точка вылетела за допустимые границы, меняем ей направление на обратное
-    if (this.x <= bLeft || this.x >= bRight)
-    	this.dx = -this.dx
-    if (this.y <= bTop || this.y >= bBottom)
-    	this.dy = -this.dy
-	}
-  public static normalize(point:{x:number;y:number;}, scale:number)
-  {
-  	point = { x:point.x, y:point.y };
-  	var norm = Math.sqrt(point.x * point.x + point.y * point.y);
-  	if (norm != 0)
-    { 
-    	point.x = scale * point.x / norm;
-    	point.y = scale * point.y / norm;
-  	}
-    return point;
-	}
+var Point = (function () {
+    function Point(x, y, dx, dy, radius, color) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (dx === void 0) { dx = 0; }
+        if (dy === void 0) { dy = 0; }
+        if (radius === void 0) { radius = 0; }
+        if (color === void 0) { color = ""; }
+        this.x = x;
+        this.y = y;
+        this.dx = dx;
+        this.dy = dy;
+        this.radius = radius;
+        this.color = color;
+    }
+    Point.prototype.move = function (bLeft, bTop, bRight, bBottom) {
+        // сдвигаем точку на dx/dy
+        this.x += this.dx;
+        this.y += this.dy;
+        // если точка вылетела за допустимые границы, меняем ей направление на обратное
+        if (this.x <= bLeft || this.x >= bRight)
+            this.dx = -this.dx;
+        if (this.y <= bTop || this.y >= bBottom)
+            this.dy = -this.dy;
+    };
+    Point.normalize = function (point, scale) {
+        point = { x: point.x, y: point.y };
+        var norm = Math.sqrt(point.x * point.x + point.y * point.y);
+        if (norm != 0) {
+            point.x = scale * point.x / norm;
+            point.y = scale * point.y / norm;
+        }
+        return point;
+    };
+    return Point;
+}());
+function createPoints() {
+    // создаём 500 точек со случайными координатами и случайно выбранным направлением
+    for (var i = 0; i < 500; i++) {
+        var radius = 1 + rnd(4);
+        var speed = (5 - radius) + 1;
+        var dir = Point.normalize(rnd_dir(), speed);
+        var alpha = Math.min(0.5 + rnd(10) / 10, 1);
+        var color = (radius > 2) ? "255,127,0" : "0,127,255";
+        POINTS.push(new Point(rnd(canvasWidth), rnd(canvasHeight), dir.x, dir.y, radius, "rgba(" + color + "," + alpha + ")"));
+    }
 }
-
-function createPoints()
-{
-	// создаём 500 точек со случайными координатами и случайно выбранным направлением
-	for (var i = 0; i < 500; i++)
-  {
-  	var radius = 1 + rnd(4)
-    var speed = (5 - radius) + 1
-    var dir = Point.normalize(rnd_dir(), speed)
-    var alpha = Math.min(0.5 + rnd(10)/10, 1)
-    var color = (radius > 2) ? "255,127,0" : "0,127,255"
-  	POINTS.push(new Point( rnd(canvasWidth), rnd(canvasHeight), dir.x, dir.y, radius, `rgba(${color},${alpha})` ) )
-	}
+function prepareUI() {
+    $("div.question>p.incorrect").each(function (i, p) {
+        var $p = $(p);
+        $p.click(function () { return $p.hide(); });
+    });
+    $("div#question1>p.correct").click(function () {
+        $("div#question1").hide();
+        createNewPoints1();
+        $("div#question2").show();
+    });
+    $("div#question2>p.correct").click(function () {
+        $("div#question2").hide();
+        createNewPoints2();
+        createNewPoints3();
+        $("div#question3").show();
+    });
+    $("div#question3>p.correct").click(function () {
+        $("div#question3").hide();
+        $("canvas#game-canvas").addClass("demo-hide");
+        setTimeout(function () { return $("canvas#game-canvas").hide(); }, 900);
+        $("div#sun").show();
+        $("div#sun").addClass("demo-show");
+    });
 }
-
-function prepareUI()
-{
-  
-	$("div.question>p.incorrect").each((i, p) =>
-  {
-  	var $p = $(p);
-  	$p.click(() => $p.hide());
-  })
-  
-	$("div#question1>p.correct").click(() =>
-  {
-  	$("div#question1").hide()
-    createNewPoints1()
-    $("div#question2").show()
-  })
-  $("div#question2>p.correct").click(() =>
-  {
-  	$("div#question2").hide()
-    createNewPoints2()
-    createNewPoints3()
-    $("div#question3").show()
-  })
-  
-  $("div#question3>p.correct").click(() =>
-  {
-  	$("div#question3").hide()
-    $("canvas#game-canvas").addClass("demo-hide")
-    setTimeout(() => $("canvas#game-canvas").hide(), 900)
-    $("div#sun").show()
-    $("div#sun").addClass("demo-show")
-  })
+function createNewPoints1() {
+    for (var i = 0; i < 100; i++) {
+        var radius = 7 + rnd(2);
+        var speed = (9 - radius) + 1;
+        var dir = Point.normalize(rnd_dir(), speed);
+        var alpha = Math.min(0.5 + rnd(10) / 10, 1);
+        var color = "127,127,127";
+        QUEUE.push(new Point(rnd(canvasWidth), rnd(canvasHeight), dir.x, dir.y, radius, "rgba(" + color + "," + alpha + ")"));
+    }
 }
-function createNewPoints1()
-{
-	for (var i = 0; i < 100; i++)
-  {
-		var radius = 7 + rnd(2)
-    var speed = (9 - radius) + 1
-  	var dir = Point.normalize(rnd_dir(), speed)
-    var alpha = Math.min(0.5 + rnd(10)/10, 1)
-    var color = "127,127,127"
-		QUEUE.push(new Point(
-    	rnd(canvasWidth),
-      rnd(canvasHeight),
-      dir.x,
-      dir.y,
-      radius,
-      `rgba(${color},${alpha})`
-    ))
-  }
+function createNewPoints2() {
+    for (var i = 0; i < 50; i++) {
+        var radius = 10 + rnd(2);
+        var speed = (7 - radius) + 1;
+        var dir = Point.normalize(rnd_dir(), speed);
+        var alpha = Math.min(0.5 + rnd(10) / 10, 1);
+        var color = "200,110,127";
+        QUEUE.push(new Point(rnd(canvasWidth), rnd(canvasHeight), dir.x, dir.y, radius, "rgba(" + color + "," + alpha + ")"));
+    }
 }
-function createNewPoints2()
-{
-	for (var i = 0; i < 50; i++)
-  {
-		var radius = 10 + rnd(2)
-    var speed = (7 - radius) + 1
-  	var dir = Point.normalize(rnd_dir(), speed)
-    var alpha = Math.min(0.5 + rnd(10)/10, 1)
-    var color = "200,110,127"
-		QUEUE.push(new Point(
-    	rnd(canvasWidth),
-      rnd(canvasHeight),
-      dir.x,
-      dir.y,
-      radius,
-      `rgba(${color},${alpha})`
-    ))
-  }
+function createNewPoints3() {
+    for (var i = 0; i < 50; i++) {
+        var radius = 1 + rnd(2);
+        var speed = (12 - radius) + 1;
+        var dir = Point.normalize(rnd_dir(), speed);
+        var alpha = Math.min(0.5 + rnd(10) / 10, 1);
+        var color = "254,250,35";
+        QUEUE.push(new Point(rnd(canvasWidth), rnd(canvasHeight), dir.x, dir.y, radius, "rgba(" + color + "," + alpha + ")"));
+    }
 }
-function createNewPoints3()
-{
-	for (var i = 0; i < 50; i++)
-  {
-		var radius = 1 + rnd(2)
-    var speed = (12 - radius) + 1
-  	var dir = Point.normalize(rnd_dir(), speed)
-    var alpha = Math.min(0.5 + rnd(10)/10, 1)
-    var color = "254,250,35"
-		QUEUE.push(new Point(
-    	rnd(canvasWidth),
-      rnd(canvasHeight),
-      dir.x,
-      dir.y,
-      radius,
-      `rgba(${color},${alpha})`
-    ))
-  }
+function movePoints() {
+    // сдвигаем все точки
+    for (var i = 0; i < POINTS.length; i++) {
+        var p = POINTS[i];
+        p.move(-50, -50, canvasWidth + 50, canvasHeight + 50);
+    }
 }
-function movePoints()
-{
-	// сдвигаем все точки
-	for (var i = 0; i < POINTS.length; i++)
-  {
-  	var p = POINTS[i]
-    p.move(-50, -50, canvasWidth+50, canvasHeight+50)
-  }
-}
-
 // выполняем каждый кадр (около 60 раз в секунду)
-function update()
-{
-	// показываем точки из очереди
-  if (QUEUE.length && (Math.random() < 0.3))
-  	POINTS.push(QUEUE.shift());
-	// сдвигаем точки
-	movePoints();
-  
-  // задаём цветовые каналы в RGBA-формате
-  const COLOR_RED = 255;
-  const COLOR_GREEN = 0;
-  const COLOR_BLUE = 0;
-  const COLOR_ALPHA = 255;
-  
-  // рисуем точки
-	for (var i = 0; i < POINTS.length; i++)
-  {
-  	var p = POINTS[i]
-    // каждая точка — это крестик из пяти красных пикселей: один в центре и по одному сверху, снизу, справа и слева
-    ctx.fillStyle = p.color
-    ctx.beginPath()
-    ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2)
-    ctx.fill()
-  }
+function update() {
+    // показываем точки из очереди
+    if (QUEUE.length && (Math.random() < 0.3))
+        POINTS.push(QUEUE.shift());
+    // сдвигаем точки
+    movePoints();
+    // задаём цветовые каналы в RGBA-формате
+    var COLOR_RED = 255;
+    var COLOR_GREEN = 0;
+    var COLOR_BLUE = 0;
+    var COLOR_ALPHA = 255;
+    // рисуем точки
+    for (var i = 0; i < POINTS.length; i++) {
+        var p = POINTS[i];
+        // каждая точка — это крестик из пяти красных пикселей: один в центре и по одному сверху, снизу, справа и слева
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
 }
-
-
 createPoints(); // создаём точки
 prepareUI();
 onEnterFrame(); // запускаем первое обновление игры (дальше оно само запускается каждый кадр)
-
 
 </script>
 
