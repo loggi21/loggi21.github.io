@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+
+  
+  
+
+  
+  
+  
+
+  
+    <script type="text/javascript" src="/js/typescript/typescript.js"></script>
+  
+
+  <script type="text/javascript" src="/js/lib/dummy.js"></script>
+
+  
+
+  
+
+  
+
+  
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+
+  
+    
+      <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    
+  
+
+  <style type="text/css">
+    body {
+  background: black;
+  font-family: Helvetica, Arial, sans-serif;
+}
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+body {
+  color: white;
+}
+div.question {
+  position: absolute;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.3);
+  padding-left: 1em;
+  padding-right: 1em;
+}
+#sun{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 100px;
+    width: 100px;
+    margin-top: -50px; 
+    margin-left: -50px;
+    background-color: yellow;
+    
+    border-color: orange;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 50%;
+    box-shadow: 0 0 25px orange;
+  
+    background: -webkit-radial-gradient(circle, yellow,gold, goldenrod);
+    background: -o-radial-gradient(circle, yellow, gold, goldenrod);
+    background: -moz-radial-gradient(circle, yellow, gold, goldenrod);
+    background: radial-gradient(circle, yellow, gold, goldenrod);  
+  
+}
+div.sun{
+    position: absolute;
+    top: 70%;
+    left: 70%;
+    height: 500px;
+    width: 500px;
+    margin-top: -50px; 
+    margin-left: -50px;
+    background-color: yellow;
+    
+    border-color: orange;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 50%;
+    box-shadow: 0 0 25px orange;
+  
+    background: -webkit-radial-gradient(circle, yellow,gold, goldenrod);
+    background: -o-radial-gradient(circle, yellow, gold, goldenrod);
+    background: -moz-radial-gradient(circle, yellow, gold, goldenrod);
+    background: radial-gradient(circle, yellow, gold, goldenrod);  
+  
+}
+canvas#game-canvas {
+  position:absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  width: 700px;
+  height: 600px;
+}
+
+@-webkit-keyframes demo-show {
+    0% {
+        opacity: 0;
+        height: 20000px;
+        width: 20000px;
+        left: -10000px;
+        top: -6000px;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        height: 100px;
+        width: 100px;
+        left: 500;
+        top: 200;
+    }
+}
+@-webkit-keyframes demo-hide {
+    0% {
+        opacity: 1;
+        left: 0px;
+        top: 0px;
+    }
+    100% {
+        opacity: 0;
+        width: 0px;
+        height: 0px;
+        left: 350px;
+        top: 300px;
+    }
+}
+@-moz-keyframes demo-show {
+    0% {
+        opacity: 0;
+        height: 20000px;
+        width: 20000px;
+        left: -10000px;
+        top: -6000px;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        height: 100px;
+        width: 100px;
+        left: 500;
+        top: 200;
+    }
+}
+@-moz-keyframes demo-hide {
+    0% {
+        opacity: 1;
+        left: 0px;
+        top: 0px;
+    }
+    100% {
+        opacity: 0;
+        width: 0px;
+        height: 0px;
+        left: 350px;
+        top: 300px;
+    }
+}
+
+
+.demo-show {
+    -webkit-animation-name: demo-show;
+    -webkit-animation-duration: 1900ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-in-out;
+    -moz-animation-name: demo-show;
+    -moz-animation-duration: 1900ms;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease-in-out;
+}
+.demo-hide {
+    -webkit-animation-name: demo-hide;
+    -webkit-animation-duration: 900ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-in-out;
+    -moz-animation-name: demo-hide;
+    -moz-animation-duration: 900ms;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease-in-out;
+}
+  </style>
+
+  <title></title>
+
+  
+    
+<script type="text/typescript">
+
+
+
+
+
+var canvas = document.getElementById('game-canvas')
+var canvasWidth = canvas.width;
+var canvasHeight = canvas.height;
+var ctx = canvas.getContext("2d");
+var canvasData;
+//1 счетчик температуры: температура растет постепенно. после каждого правильного ответа температура резко возрастает. 2 постепенное появление шаров. Работа в разных браузерах и на сервере.  
+/**
+выполняем каждый кадр (примерно 60 раз в секунду)
+*/
+
+function onEnterFrame()
+{
+	// очищаем область рисования
+	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+  // обновляем игровые параметры
+	update();
+  // отрисовываем новую графику в области рисования
+  //ctx.putImageData(canvasData, 0, 0);
+  
+  // планируем вызов этой же функции на следующий кадр
+	requestAnimationFrame(onEnterFrame);
+}
+
+/**
+рисует пиксель заданного цвета на заданных координатах
+*/
+function drawPixel (x, y, r, g, b, a)
+{
+    var index = (x + y * canvasWidth) * 4;
+
+    canvasData.data[index + 0] = r;
+    canvasData.data[index + 1] = g;
+    canvasData.data[index + 2] = b;
+    canvasData.data[index + 3] = a;
+}
+
+var POINTS = []
+var QUEUE = []
+var T = 0;
+var T_SPEED = 0.1;
+
+
+function updateTemp()
+{
+  if(T<=10)
+  {
+    T += T_SPEED;
+  }
+  $('#t-value').text(T.toFixed(0));
+}
+setInterval(updateTemp, 100);
+
+
+
+/**
+функция возвращает случайное число от 0 до x не включительно [0,x)
+*/
+function rnd(x:number){ return Math.floor(Math.random() * x); }
+
+/**
+функция возвращает случайно выбранный элемент из массива
+*/
+function rnd_choice<T>(arr:T[]){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+/**
+функция возвращает случайно выбранное направление движения в формате {x, y}
+*/
+function rnd_dir()
+{
+  return Point.normalize({ x:Math.random() * 2 - 1, y:Math.random() * 2 - 1 }, 1)
+}
+
+class Point
+{
+  constructor(
+  	public x = 0,
+    public y = 0,
+    public dx = 0,
+    public dy = 0,
+    public radius = 0,
+    public color = ""
+  )
+  {
+	}
+  move(bLeft:number, bTop:number, bRight:number, bBottom:number)
+  // bLeft — левая граница, от которой отскакивает точка
+  // bTop — верхняя, bRight — правая, bBottom — нижняя
+  {
+  	// сдвигаем точку на dx/dy
+  	this.x += this.dx
+    this.y += this.dy
+    
+    // если точка вылетела за допустимые границы, меняем ей направление на обратное
+    if (this.x <= bLeft || this.x >= bRight)
+    	this.dx = -this.dx
+    if (this.y <= bTop || this.y >= bBottom)
+    	this.dy = -this.dy
+	}
+  public static normalize(point:{x:number;y:number;}, scale:number)
+  {
+  	point = { x:point.x, y:point.y };
+  	var norm = Math.sqrt(point.x * point.x + point.y * point.y);
+  	if (norm != 0)
+    { 
+    	point.x = scale * point.x / norm;
+    	point.y = scale * point.y / norm;
+  	}
+    return point;
+	}
+}
+
+function createPoints()
+{
+	// создаём 500 точек со случайными координатами и случайно выбранным направлением
+	for (var i = 0; i < 500; i++)
+  {
+  	var radius = 1 + rnd(4)
+    var speed = (5 - radius) + 1
+    var dir = Point.normalize(rnd_dir(), speed)
+    var alpha = Math.min(0.5 + rnd(10)/10, 1)
+    var color = (radius > 2) ? "255,127,0" : "0,127,255"
+  	POINTS.push(new Point( rnd(canvasWidth), rnd(canvasHeight), dir.x, dir.y, radius, `rgba(${color},${alpha})` ) )
+	}
+}
+
+function prepareUI()
+{
+  
+	$("div.question>p.incorrect").each((i, p) =>
+  {
+  	var $p = $(p);
+  	$p.click(() => $p.hide());
+  })
+  
+	$("div#question1>p.correct").click(() =>
+  {
+  	$("div#question1").hide()
+    createNewPoints1()
+    $("div#question2").show()
+  })
+  $("div#question2>p.correct").click(() =>
+  {
+  	$("div#question2").hide()
+    createNewPoints2()
+    createNewPoints3()
+    $("div#question3").show()
+  })
+  
+  $("div#question3>p.correct").click(() =>
+  {
+  	$("div#question3").hide()
+    $("canvas#game-canvas").addClass("demo-hide")
+    setTimeout(() => $("canvas#game-canvas").hide(), 900)
+    $("div#sun").show()
+    $("div#sun").addClass("demo-show")
+  })
+}
+function createNewPoints1()
+{
+	for (var i = 0; i < 100; i++)
+  {
+		var radius = 7 + rnd(2)
+    var speed = (9 - radius) + 1
+  	var dir = Point.normalize(rnd_dir(), speed)
+    var alpha = Math.min(0.5 + rnd(10)/10, 1)
+    var color = "127,127,127"
+		QUEUE.push(new Point(
+    	rnd(canvasWidth),
+      rnd(canvasHeight),
+      dir.x,
+      dir.y,
+      radius,
+      `rgba(${color},${alpha})`
+    ))
+  }
+}
+function createNewPoints2()
+{
+	for (var i = 0; i < 50; i++)
+  {
+		var radius = 10 + rnd(2)
+    var speed = (7 - radius) + 1
+  	var dir = Point.normalize(rnd_dir(), speed)
+    var alpha = Math.min(0.5 + rnd(10)/10, 1)
+    var color = "200,110,127"
+		QUEUE.push(new Point(
+    	rnd(canvasWidth),
+      rnd(canvasHeight),
+      dir.x,
+      dir.y,
+      radius,
+      `rgba(${color},${alpha})`
+    ))
+  }
+}
+function createNewPoints3()
+{
+	for (var i = 0; i < 50; i++)
+  {
+		var radius = 1 + rnd(2)
+    var speed = (12 - radius) + 1
+  	var dir = Point.normalize(rnd_dir(), speed)
+    var alpha = Math.min(0.5 + rnd(10)/10, 1)
+    var color = "254,250,35"
+		QUEUE.push(new Point(
+    	rnd(canvasWidth),
+      rnd(canvasHeight),
+      dir.x,
+      dir.y,
+      radius,
+      `rgba(${color},${alpha})`
+    ))
+  }
+}
+function movePoints()
+{
+	// сдвигаем все точки
+	for (var i = 0; i < POINTS.length; i++)
+  {
+  	var p = POINTS[i]
+    p.move(-50, -50, canvasWidth+50, canvasHeight+50)
+  }
+}
+
+// выполняем каждый кадр (около 60 раз в секунду)
+function update()
+{
+	// показываем точки из очереди
+  if (QUEUE.length && (Math.random() < 0.3))
+  	POINTS.push(QUEUE.shift());
+	// сдвигаем точки
+	movePoints();
+  
+  // задаём цветовые каналы в RGBA-формате
+  const COLOR_RED = 255;
+  const COLOR_GREEN = 0;
+  const COLOR_BLUE = 0;
+  const COLOR_ALPHA = 255;
+  
+  // рисуем точки
+	for (var i = 0; i < POINTS.length; i++)
+  {
+  	var p = POINTS[i]
+    // каждая точка — это крестик из пяти красных пикселей: один в центре и по одному сверху, снизу, справа и слева
+    ctx.fillStyle = p.color
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2)
+    ctx.fill()
+  }
+}
+
+
+createPoints(); // создаём точки
+prepareUI();
+onEnterFrame(); // запускаем первое обновление игры (дальше оно само запускается каждый кадр)
+
+
+</script>
+
+  
+</head>
+
+<body>
+  <canvas id="game-canvas" width="700" height="600"></canvas>
+<div class="temperature">Temperature: <span id="t-value">10</span>MK</div>
+
+<div id="question1" class="question">
+  <p class="correct"><a href="#">
+    1. p + p =&gt; d + e<sup>+</sup> + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    2. p =&gt; n + e<sup>+</sup> + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    3. p + e =&gt; 2&#947;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    4. p + p + p=&gt; <sup>3</sup>He + e<sup>+</sup>;
+  </a></p>
+</div>
+
+
+<div id="question2" class="question" style="display:none;">
+  <p class="correct"><a href="#">
+  1. p + d =&gt; <sup>3</sup>He + &#947;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    2. p + d =&gt; <sup>3</sup>He + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    3. p + p + p =&gt; e<sup>-</sup> + <sup>4</sup>He;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    4. e<sup>+</sup> + p =&gt; 2e<sup>+</sup> + &#947;
+  </a></p>
+</div>
+
+<div id="question3" class="question" style="display:none;">
+  <p class="correct"><a href="#">
+    1. <sup>3</sup>He + <sup>3</sup>He =&gt; <sup>4</sup>He + 2p<sup></sup>;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    2. <sup>3</sup>He + 2p + e =&gt; <sup>5</sup>Li + e<sup>+</sup>;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    3. 2p + <sup>3</sup>He + <sup>3</sup>He =&gt;  + <sup>7</sup>Be + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    4. p + p =&gt; d + e<sup>+</sup> + &#957;
+  </a></p>
+</div>
+
+<div id="sun"  style="display:none"></div>
+
+  
+</body>
+
+</html>
+
