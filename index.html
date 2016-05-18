@@ -198,8 +198,64 @@ canvas#game-canvas {
 
   <title></title>
 
+
+
+
   
-    
+</head>
+
+<body>
+  <canvas id="game-canvas" width="700" height="600"></canvas>
+<div class="temperature">Temperature: <span id="t-value">10</span>MK</div>
+
+<div id="question1" class="question">
+  <p class="correct"><a href="#">
+    1. p + p =&gt; d + e<sup>+</sup> + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    2. p =&gt; n + e<sup>+</sup> + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    3. p + e =&gt; 2&#947;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    4. p + p + p=&gt; <sup>3</sup>He + e<sup>+</sup>;
+  </a></p>
+</div>
+
+
+<div id="question2" class="question" style="display:none;">
+  <p class="correct"><a href="#">
+  1. p + d =&gt; <sup>3</sup>He + &#947;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    2. p + d =&gt; <sup>3</sup>He + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    3. p + p + p =&gt; e<sup>-</sup> + <sup>4</sup>He;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    4. e<sup>+</sup> + p =&gt; 2e<sup>+</sup> + &#947;
+  </a></p>
+</div>
+
+<div id="question3" class="question" style="display:none;">
+  <p class="correct"><a href="#">
+    1. <sup>3</sup>He + <sup>3</sup>He =&gt; <sup>4</sup>He + 2p<sup></sup>;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    2. <sup>3</sup>He + 2p + e =&gt; <sup>5</sup>Li + e<sup>+</sup>;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    3. 2p + <sup>3</sup>He + <sup>3</sup>He =&gt;  + <sup>7</sup>Be + &#957;
+  </a></p>
+  <p class="incorrect"><a href="#">
+    4. p + p =&gt; d + e<sup>+</sup> + &#957;
+  </a></p>
+</div>
+
+<div id="sun"  style="display:none"></div>
+
 <script>
 
 
@@ -392,64 +448,7 @@ createPoints(); // создаём точки
 prepareUI();
 onEnterFrame(); // запускаем первое обновление игры (дальше оно само запускается каждый кадр)
 
-</script>
-
-  
-</head>
-
-<body>
-  <canvas id="game-canvas" width="700" height="600"></canvas>
-<div class="temperature">Temperature: <span id="t-value">10</span>MK</div>
-
-<div id="question1" class="question">
-  <p class="correct"><a href="#">
-    1. p + p =&gt; d + e<sup>+</sup> + &#957;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    2. p =&gt; n + e<sup>+</sup> + &#957;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    3. p + e =&gt; 2&#947;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    4. p + p + p=&gt; <sup>3</sup>He + e<sup>+</sup>;
-  </a></p>
-</div>
-
-
-<div id="question2" class="question" style="display:none;">
-  <p class="correct"><a href="#">
-  1. p + d =&gt; <sup>3</sup>He + &#947;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    2. p + d =&gt; <sup>3</sup>He + &#957;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    3. p + p + p =&gt; e<sup>-</sup> + <sup>4</sup>He;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    4. e<sup>+</sup> + p =&gt; 2e<sup>+</sup> + &#947;
-  </a></p>
-</div>
-
-<div id="question3" class="question" style="display:none;">
-  <p class="correct"><a href="#">
-    1. <sup>3</sup>He + <sup>3</sup>He =&gt; <sup>4</sup>He + 2p<sup></sup>;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    2. <sup>3</sup>He + 2p + e =&gt; <sup>5</sup>Li + e<sup>+</sup>;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    3. 2p + <sup>3</sup>He + <sup>3</sup>He =&gt;  + <sup>7</sup>Be + &#957;
-  </a></p>
-  <p class="incorrect"><a href="#">
-    4. p + p =&gt; d + e<sup>+</sup> + &#957;
-  </a></p>
-</div>
-
-<div id="sun"  style="display:none"></div>
-
-  
+</script>  
 </body>
 
 </html>
