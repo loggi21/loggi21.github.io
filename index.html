@@ -425,7 +425,7 @@ function movePoints() {
 // выполняем каждый кадр (около 60 раз в секунду)
 function update() {
     // показываем точки из очереди
-    if (QUEUE.length && (Math.random() < 0.3))
+    if (QUEUE.length && (Math.random() < 0.5))
         POINTS.push(QUEUE.shift());
     // сдвигаем точки
     movePoints();
